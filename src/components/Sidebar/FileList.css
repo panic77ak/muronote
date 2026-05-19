@@ -68,10 +68,25 @@
 }
 
 /* 修改时间 */
+.file-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.file-item-folder {
+  font-size: 10px;
+  color: var(--color-text-disabled);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
 .file-item-mtime {
   font-size: 11px;
   color: var(--color-text-disabled);
-  margin-top: 2px;
 }
 
 /* 空状态文字 */

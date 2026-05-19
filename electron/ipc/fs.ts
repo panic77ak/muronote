@@ -51,25 +51,35 @@ export function registerFsHandlers(): void {
   })
 
   // ──────────────────────────────────────────────
-  // 读取目录：返回 .md 文件列表，附带 mtime
+  // 读取目录：递归返回所有 .md 文件列表，附带 mtime 和相对路径
   // ──────────────────────────────────────────────
   ipcMain.handle('fs:readDir', async (_event, dirPath: string) => {
     assertPathInRoot(dirPath)
-    const entries = await fs.readdir(dirPath, { withFileTypes: true })
-    const mdFiles = entries.filter(e => e.isFile() && e.name.endsWith('.md'))
 
-    const results = await Promise.all(
-      mdFiles.map(async (e) => {
-        const filePath = path.join(dirPath, e.name)
-        const stat = await fs.stat(filePath)
-        return {
-          name: e.name,
-          path: filePath,
-          mtime: stat.mtimeMs,
+    const results: Array<{ name: string; path: string; mtime: number; relativePath: string }> = []
+
+    async function walk(dir: string): Promise<void> {
+      const entries = await fs.readdir(dir, { withFileTypes: true })
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name)
+        if (entry.isDirectory()) {
+          // 跳过隐藏目录（.git, .obsidian 等）
+          if (entry.name.startsWith('.') || entry.name === 'node_modules') continue
+          await walk(fullPath)
+        } else if (entry.isFile() && entry.name.endsWith('.md')) {
+          const stat = await fs.stat(fullPath)
+          const relativePath = path.relative(dirPath, fullPath).replace(/\\/g, '/')
+          results.push({
+            name: entry.name,
+            path: fullPath,
+            mtime: stat.mtimeMs,
+            relativePath,
+          })
         }
-      })
-    )
+      }
+    }
 
+    await walk(dirPath)
     // 按最近修改时间倒序
     results.sort((a, b) => b.mtime - a.mtime)
     return results
@@ -137,9 +147,10 @@ export function registerFsHandlers(): void {
     // 动态 import chokidar（ESM）
     const chokidar = await import('chokidar')
     const watcher = chokidar.watch(dirPath, {
-      depth: 0,           // 只监听一层，不递归子目录
+      depth: 5,            // 递归监听子目录（最深 5 层）
       ignoreInitial: true,
       persistent: true,
+      ignored: /(^|[\/\\])\.|node_modules/,  // 忽略隐藏目录和 node_modules
     })
 
     currentWatcher = watcher as unknown as FSWatcher
@@ -220,19 +231,31 @@ export function registerFsHandlers(): void {
     let totalCount = 0
     const lowerQuery = query.toLowerCase()
 
-    // 列出所有 .md 文件（只读根目录，不接受外部路径）
-    let entries: string[]
-    try {
-      entries = fsSync.readdirSync(currentRootDir)
-    } catch {
-      return []
+    // 递归收集所有 .md 文件路径
+    function collectMdFiles(dir: string): Array<{ filePath: string; fileName: string }> {
+      const collected: Array<{ filePath: string; fileName: string }> = []
+      let entries: ReturnType<typeof fsSync.readdirSync>
+      try {
+        entries = fsSync.readdirSync(dir, { withFileTypes: true })
+      } catch {
+        return collected
+      }
+      for (const entry of entries) {
+        if (entry.name.startsWith('.') || entry.name === 'node_modules') continue
+        const fullPath = path.join(dir, entry.name)
+        if (entry.isDirectory()) {
+          collected.push(...collectMdFiles(fullPath))
+        } else if (entry.isFile() && entry.name.endsWith('.md')) {
+          collected.push({ filePath: fullPath, fileName: entry.name })
+        }
+      }
+      return collected
     }
 
-    for (const name of entries) {
-      if (totalCount >= MAX_TOTAL_RESULTS) break
-      if (!name.endsWith('.md')) continue
+    const mdFiles = collectMdFiles(currentRootDir)
 
-      const filePath = path.join(currentRootDir, name)
+    for (const { filePath, fileName } of mdFiles) {
+      if (totalCount >= MAX_TOTAL_RESULTS) break
 
       let content: string
       try {
@@ -280,7 +303,7 @@ export function registerFsHandlers(): void {
       }
 
       if (fileMatches.length > 0) {
-        results.push({ filePath, fileName: name, matches: fileMatches })
+        results.push({ filePath, fileName, matches: fileMatches })
         totalCount += fileMatches.length
       }
     }

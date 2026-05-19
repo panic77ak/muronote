@@ -282,6 +282,17 @@ function App(): React.ReactElement {
     addRecentFolder(path)
   }, [addRecentFolder])
 
+  // ── 关闭文件夹 ──
+  const handleCloseFolder = useCallback(() => {
+    setFolderPath('')
+    setActiveFile(null)
+    setFileContent('')
+    setEditorContent('')
+    setSearchQuery('')
+    setSearchResults([])
+    localStorage.removeItem('dumbnote-folder')
+  }, [])
+
   // ── 打开文件夹（对话框） ──
   const handleOpenFolder = async (): Promise<void> => {
     const path = await window.electronAPI.openFolder()
@@ -409,6 +420,13 @@ function App(): React.ReactElement {
           {folderPath && (
             <span className="folder-path" title={folderPath}>
               📁 {folderDisplayName}
+              <button
+                className="folder-close-btn"
+                onClick={handleCloseFolder}
+                title="关闭文件夹"
+              >
+                ×
+              </button>
             </span>
           )}
           {folderPath && (

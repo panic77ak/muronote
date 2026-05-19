@@ -2,6 +2,7 @@ export interface NoteFile {
   name: string
   path: string
   mtime: number
+  relativePath?: string
 }
 
 export interface DirChangedEvent {

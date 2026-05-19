@@ -39,6 +39,16 @@ function displayName(fileName: string): string {
   return fileName.endsWith('.md') ? fileName.slice(0, -3) : fileName
 }
 
+/**
+ * 从 relativePath 提取父文件夹路径（不含文件名）
+ */
+function getFolder(relativePath?: string): string {
+  if (!relativePath) return ''
+  const parts = relativePath.split('/')
+  if (parts.length <= 1) return ''
+  return parts.slice(0, -1).join('/')
+}
+
 function FileList({ dirPath, activeFilePath, onFileSelect, onFileDelete }: FileListProps): React.ReactElement {
   const [files, setFiles] = useState<NoteFile[]>([])
   const [loading, setLoading] = useState(true)
@@ -113,7 +123,12 @@ function FileList({ dirPath, activeFilePath, onFileSelect, onFileDelete }: FileL
             title={file.path}
           >
             <span className="file-item-name">{displayName(file.name)}</span>
-            <span className="file-item-mtime">{formatMtime(file.mtime)}</span>
+            <span className="file-item-meta">
+              {getFolder(file.relativePath) && (
+                <span className="file-item-folder">{getFolder(file.relativePath)}/</span>
+              )}
+              <span className="file-item-mtime">{formatMtime(file.mtime)}</span>
+            </span>
           </li>
         ))}
       </ul>
