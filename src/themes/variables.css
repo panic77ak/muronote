@@ -1,0 +1,68 @@
+/* ============================================================
+   DumbNote — Ink 暗色主题色彩变量
+   设计方案：Ink（深邃 + 暖白文字 + 暖青绿强调）
+   ============================================================ */
+
+:root {
+  /* ---------- 字体变量 ---------- */
+  --font-body: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-heading: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace;
+
+
+  /* ---------- 背景层 ---------- */
+  --color-bg-app: #141414;          /* 主背景，比原 #1e1e1e 更深有质感 */
+  --color-bg-sidebar: #1c1c1e;      /* 侧边栏，微暖 */
+  --color-bg-content: #181818;      /* 内容阅读区 */
+
+  /* ---------- 表面层 ---------- */
+  --color-surface-code: #0f0f0f;           /* 代码块背景，比主背景更深 */
+  --color-surface-table-header: #242424;   /* 表格表头 */
+  --color-surface-modebar: #252528;        /* mode-bar 浮层，微紫调 */
+  --color-surface-hover: rgba(255,255,255,0.04);   /* 列表项 hover */
+  --color-surface-active: rgba(255,255,255,0.07);  /* 列表项选中 */
+
+  /* ---------- 强调色 ---------- */
+  --color-accent: #6eb5a0;                 /* 选中指示线 */
+
+  /* ---------- 文字层 ---------- */
+  --color-text-heading: #f0ece4;    /* 标题，暖白 */
+  --color-text-body: #c8c3bb;       /* 正文，暖灰有纸张感 */
+  --color-text-secondary: #7a7672;  /* 次要文字 */
+  --color-text-disabled: #4a4845;   /* 禁用/标注文字 */
+
+  /* ---------- 强调色 ---------- */
+  --color-accent-link: #6eb5a0;     /* 链接，暖青绿 */
+  --color-accent-success: #7cb87a;  /* 成功/复制按钮成功态 */
+  --color-accent-focus: #6eb5a0;    /* 输入框 focus 高亮，语义独立于 success */
+
+  /* ---------- 边框与分割线 ---------- */
+  --color-border-divider: #2a2826;  /* 分割线 */
+  --color-border-default: #333230;  /* 边框 */
+  --color-border-blockquote: #5a5a6a; /* 引用块左边框 */
+
+  /* ---------- 行内代码 ---------- */
+  --color-surface-code-inline: rgba(255, 255, 255, 0.08); /* 行内代码背景 */
+  --color-text-code-inline: #ce9178;                      /* 行内代码文字 */
+
+  /* ---------- 引用块文字 ---------- */
+  --color-text-blockquote: #b0b0c0; /* 引用块文字色 */
+}
+
+/* ---------- 字体切换：data-font-body 属性覆盖（仅影响正文） ---------- */
+[data-font-body="serif"] {
+  --font-body: 'Source Serif 4', 'Georgia', serif;
+}
+
+[data-font-body="lora"] {
+  --font-body: 'Lora', 'Georgia', serif;
+}
+
+/* ---------- 标题字体独立切换：data-font-heading 属性覆盖 ---------- */
+[data-font-heading="inter"] {
+  --font-heading: 'Inter', system-ui, sans-serif;
+}
+
+[data-font-heading="serif"] {
+  --font-heading: 'Source Serif 4', Georgia, serif;
+}

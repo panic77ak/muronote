@@ -1,0 +1,54 @@
+/* ============================================================
+   ReaderView 布局样式
+   - 内容最大宽度 720px，水平居中，两侧留白
+   - 无工具栏，纯阅读体验
+   ============================================================ */
+
+.reader-view {
+  flex: 1;
+  overflow-y: auto;
+  /* 上下留白充足，两侧 padding 确保小屏不贴边 */
+  padding: 48px 32px;
+  /* 滚动条细化 */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-default) transparent;
+}
+
+.reader-view::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reader-view::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reader-view::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 3px;
+}
+
+.reader-content {
+  /* max-width 由 ReaderView width prop 通过 inline style 控制 */
+  width: 100%;
+}
+
+/* ---------- frontmatter 元数据条 ---------- */
+.note-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+
+.meta-status {
+  background: var(--color-surface-active);
+  color: var(--color-text-secondary);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.meta-tag {
+  color: var(--color-accent-success);
+  font-size: 12px;
+}

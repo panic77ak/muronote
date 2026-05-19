@@ -1,0 +1,122 @@
+/* ============================================================
+   SettingsPopover — 排版设置弹出面板
+   ============================================================ */
+
+.settings-popover {
+  position: absolute;
+  top: 48px;
+  right: 16px;
+  z-index: 100;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  min-width: 220px;
+
+  background: var(--color-surface-modebar, #252528);
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+
+  /* 入场动画 */
+  animation: popover-in 0.15s ease-out;
+}
+
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── 分组 ── */
+.settings-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-group-label {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  min-width: 32px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* ── Segmented Control ── */
+.settings-segmented {
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  padding: 2px;
+  flex: 1;
+}
+
+.seg-btn {
+  flex: 1;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.seg-btn:hover {
+  color: var(--color-text-body);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.seg-btn.active {
+  color: var(--color-text-heading);
+  background: var(--color-border-default);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ── 主题按钮特殊样式（色块指示器） ── */
+.seg-btn--theme-ink.active {
+  background: #2a2a2e;
+  color: #f0ece4;
+}
+
+.seg-btn--theme-paper.active {
+  background: #e8e4de;
+  color: #1a1814;
+}
+
+.seg-btn--theme-sepia.active {
+  background: #d4c5a9;
+  color: #2c2018;
+}
+
+/* ── 字体按钮字体预览 ── */
+.seg-btn--font-sans {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.seg-btn--font-serif {
+  font-family: 'Source Serif 4', Georgia, serif;
+}
+
+.seg-btn--font-lora {
+  font-family: 'Lora', Georgia, serif;
+}
+
+.seg-btn--heading-inter {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.seg-btn--heading-serif {
+  font-family: 'Source Serif 4', Georgia, serif;
+}

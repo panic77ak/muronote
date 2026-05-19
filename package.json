@@ -7,12 +7,44 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
+    "pack": "npm run build && electron-builder --dir",
+    "make": "npm run build && electron-builder",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write ."
   },
   "keywords": [],
-  "author": "",
+  "author": "DumbNote",
   "license": "MIT",
+  "build": {
+    "appId": "com.dumbnote.app",
+    "productName": "DumbNote",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.productivity"
+    }
+  },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^25.8.0",
@@ -22,6 +54,7 @@
     "@typescript-eslint/parser": "^8.59.3",
     "@vitejs/plugin-react": "^4.7.0",
     "electron": "^42.1.0",
+    "electron-builder": "^26.8.1",
     "electron-vite": "^5.0.0",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",

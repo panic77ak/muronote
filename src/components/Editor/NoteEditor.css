@@ -1,0 +1,95 @@
+/* ============================================================
+   NoteEditor — 左右分栏编辑器
+   ============================================================ */
+
+/* ── 分栏容器 ── */
+.editor-split {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* ── 左侧编辑区 ── */
+.editor-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-bg-content);
+}
+
+.editor-pane-textarea {
+  flex: 1;
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+
+  font-family: var(--font-mono, 'JetBrains Mono', 'Fira Code', monospace);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-body);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.editor-pane-textarea::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.editor-pane-textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.editor-pane-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editor-pane-textarea::-webkit-scrollbar-thumb {
+  background: var(--color-border-default, #3a3a4a);
+  border-radius: 2px;
+}
+
+/* ── 分隔线 ── */
+.editor-split-divider {
+  width: 1px;
+  flex-shrink: 0;
+  background: var(--color-border-default);
+}
+
+/* ── 右侧预览区 ── */
+.preview-pane {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  box-sizing: border-box;
+  background: var(--color-bg-content);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-default) transparent;
+}
+
+.preview-pane::-webkit-scrollbar {
+  width: 4px;
+}
+
+.preview-pane::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.preview-pane::-webkit-scrollbar-thumb {
+  background: var(--color-border-default, #3a3a4a);
+  border-radius: 2px;
+}
+
+/* 预览区内容不限制宽度（分栏下用全宽） */
+.preview-content {
+  max-width: 100%;
+  width: 100%;
+}

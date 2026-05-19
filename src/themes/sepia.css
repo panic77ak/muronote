@@ -1,0 +1,88 @@
+/* ============================================================
+   DumbNote — Sepia 护眼主题
+   设计方案：暖棕色调，减少蓝光，适合长时间阅读
+   ============================================================ */
+
+[data-theme="sepia"] {
+  --color-bg-app: #f4ede0;
+  --color-bg-sidebar: #ece4d4;
+  --color-bg-content: #f8f2e8;
+  --color-surface-code: #e8dece;
+  --color-surface-table-header: #e2d8c8;
+  --color-surface-modebar: #ddd3c3;
+  --color-surface-hover: rgba(0,0,0,0.04);
+  --color-surface-active: rgba(0,0,0,0.07);
+  --color-accent: #5a7a4a;
+  --color-text-heading: #2c2018;
+  --color-text-body: #4a3828;
+  --color-text-secondary: #8a7060;
+  --color-text-disabled: #b8a898;
+  --color-accent-link: #5a7a4a;
+  --color-accent-success: #5a8a38;
+  --color-accent-focus: #5a7a4a;
+  --color-border-divider: #d8ccbc;
+  --color-border-default: #ccc0b0;
+  --color-border-blockquote: #9a8a70;
+  --color-surface-code-inline: rgba(0, 0, 0, 0.07);
+  --color-text-code-inline: #8b3a2f;
+  --color-text-blockquote: #6a5a48;
+}
+
+/* ---------- hljs 护眼主题覆盖（暖色系） ---------- */
+[data-theme="sepia"] .hljs-keyword,
+[data-theme="sepia"] .hljs-selector-tag,
+[data-theme="sepia"] .hljs-literal {
+  color: #7a4a1a;
+}
+
+[data-theme="sepia"] .hljs-string,
+[data-theme="sepia"] .hljs-attr {
+  color: #5a6a2a;
+}
+
+[data-theme="sepia"] .hljs-comment {
+  color: #9a8a70;
+  font-style: italic;
+}
+
+[data-theme="sepia"] .hljs-function,
+[data-theme="sepia"] .hljs-title {
+  color: #6a4a8a;
+}
+
+[data-theme="sepia"] .hljs-number,
+[data-theme="sepia"] .hljs-meta {
+  color: #3a6a8a;
+}
+
+[data-theme="sepia"] .hljs-type,
+[data-theme="sepia"] .hljs-built_in {
+  color: #4a7a6a;
+}
+
+[data-theme="sepia"] .hljs-variable,
+[data-theme="sepia"] .hljs-name {
+  color: #5a4a2a;
+}
+
+/* ---------- 代码块基础色 ---------- */
+[data-theme="sepia"] .markdown-body .code-block code {
+  color: #3a2c1c;
+}
+
+/* ---------- 复制按钮 hover 适配暖色 ---------- */
+[data-theme="sepia"] .markdown-body .copy-code-btn:hover {
+  border-color: #b8a898;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ---------- mode-bar 按钮暖色适配 ---------- */
+[data-theme="sepia"] .mode-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-text-body);
+}
+
+/* ---------- 图片阴影（亮色下减弱） ---------- */
+[data-theme="sepia"] .markdown-body img {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+}

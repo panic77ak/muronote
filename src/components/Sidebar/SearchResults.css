@@ -1,0 +1,63 @@
+/* ============================================================
+   SearchResults — 全文搜索结果列表
+   ============================================================ */
+
+.search-results {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.search-results-empty {
+  color: var(--color-text-muted, var(--color-text-disabled));
+  font-size: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+/* 每个文件组 */
+.search-result-group {
+  margin-bottom: 8px;
+}
+
+/* 文件名标题 */
+.search-result-file {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary, var(--color-text-heading));
+  padding: 6px 12px 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 每条匹配行 */
+.search-result-match {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  padding: 3px 12px 3px 20px;
+  cursor: pointer;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.1s;
+}
+
+.search-result-match:hover {
+  background: var(--color-surface-hover, rgba(255, 255, 255, 0.04));
+}
+
+/* 行号前缀 */
+.search-result-lineno {
+  color: var(--color-text-disabled);
+  font-size: 10px;
+  margin-right: 2px;
+}
+
+/* 高亮匹配词 */
+.search-result-match mark {
+  background: var(--color-accent-success, #6eb5a0);
+  color: var(--color-bg-base, #0e0e14);
+  border-radius: 2px;
+  padding: 0 2px;
+}

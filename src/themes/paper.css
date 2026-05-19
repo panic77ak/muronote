@@ -1,0 +1,88 @@
+/* ============================================================
+   DumbNote — Paper 亮色主题
+   设计方案：米白纸感，适合日间阅读
+   ============================================================ */
+
+[data-theme="paper"] {
+  --color-bg-app: #f5f3ef;
+  --color-bg-sidebar: #ede9e3;
+  --color-bg-content: #faf8f5;
+  --color-surface-code: #eeeae4;
+  --color-surface-table-header: #e8e4de;
+  --color-surface-modebar: #e0dcd6;
+  --color-surface-hover: rgba(0,0,0,0.04);
+  --color-surface-active: rgba(0,0,0,0.07);
+  --color-accent: #2a7a6a;
+  --color-text-heading: #1a1814;
+  --color-text-body: #3a3530;
+  --color-text-secondary: #7a7470;
+  --color-text-disabled: #b0aaa4;
+  --color-accent-link: #2a7a6a;
+  --color-accent-success: #3a8a38;
+  --color-accent-focus: #2a7a6a;
+  --color-border-divider: #dedad4;
+  --color-border-default: #d0ccc6;
+  --color-border-blockquote: #9a9490;
+  --color-surface-code-inline: rgba(0, 0, 0, 0.06);
+  --color-text-code-inline: #c7254e;
+  --color-text-blockquote: #5a5450;
+}
+
+/* ---------- hljs 亮色主题覆盖 ---------- */
+[data-theme="paper"] .hljs-keyword,
+[data-theme="paper"] .hljs-selector-tag,
+[data-theme="paper"] .hljs-literal {
+  color: #0550ae;
+}
+
+[data-theme="paper"] .hljs-string,
+[data-theme="paper"] .hljs-attr {
+  color: #953800;
+}
+
+[data-theme="paper"] .hljs-comment {
+  color: #6e7781;
+  font-style: italic;
+}
+
+[data-theme="paper"] .hljs-function,
+[data-theme="paper"] .hljs-title {
+  color: #8250df;
+}
+
+[data-theme="paper"] .hljs-number,
+[data-theme="paper"] .hljs-meta {
+  color: #0550ae;
+}
+
+[data-theme="paper"] .hljs-type,
+[data-theme="paper"] .hljs-built_in {
+  color: #0a7a7a;
+}
+
+[data-theme="paper"] .hljs-variable,
+[data-theme="paper"] .hljs-name {
+  color: #0a3069;
+}
+
+/* ---------- 代码块基础色 ---------- */
+[data-theme="paper"] .markdown-body .code-block code {
+  color: #24292f;
+}
+
+/* ---------- 复制按钮 hover 适配亮色 ---------- */
+[data-theme="paper"] .markdown-body .copy-code-btn:hover {
+  border-color: #b0aaa4;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ---------- mode-bar 按钮亮色适配 ---------- */
+[data-theme="paper"] .mode-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-text-body);
+}
+
+/* ---------- 图片阴影（亮色下减弱） ---------- */
+[data-theme="paper"] .markdown-body img {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+}
