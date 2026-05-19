@@ -1,7 +1,7 @@
 {
-  "name": "dumbnote-clone",
+  "name": "muronote",
   "version": "1.0.0",
-  "description": "A Markdown reading tool for designers",
+  "description": "A beautiful Markdown reader for designers",
   "main": "out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
@@ -15,11 +15,11 @@
     "test:visual:update": "npm run build && npx playwright test --update-snapshots"
   },
   "keywords": [],
-  "author": "DumbNote",
+  "author": "Muronote",
   "license": "MIT",
   "build": {
-    "appId": "com.dumbnote.app",
-    "productName": "DumbNote",
+    "appId": "com.muronote.app",
+    "productName": "Muronote",
     "directories": {
       "output": "dist"
     },
@@ -31,8 +31,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "dumbnote",
-        "repo": "dumbnote"
+        "owner": "muronote",
+        "repo": "muronote"
       }
     ],
     "fileAssociations": [
@@ -57,7 +57,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "DumbNote"
+      "shortcutName": "Muronote"
     },
     "mac": {
       "target": ["dmg", "zip"],

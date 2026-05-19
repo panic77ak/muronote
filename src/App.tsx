@@ -22,7 +22,7 @@ const md = createMarkdownRenderer()
 // ── 欢迎页示例 HTML（folderPath 为空时展示，直接硬编码 HTML 字符串）──
 const WELCOME_SAMPLE_HTML = `
 <h1>让 Markdown 也可以很美</h1>
-<p>DumbNote 是为设计师打造的本地 Markdown 阅读器。打开一个文件夹，所有 <code>.md</code> 文件将自动出现在左侧列表。</p>
+<p>Muronote 是为设计师打造的本地 Markdown 阅读器。打开一个文件夹，所有 <code>.md</code> 文件将自动出现在左侧列表。</p>
 <h2>排版即体验</h2>
 <p>精心调校的行高、字间距与信息层级，让文档阅读体验接近出版物质感。支持 <strong>粗体</strong>、<em>斜体</em>与行内 <code>代码标注</code>。</p>
 <blockquote><p>好的排版不是装饰，而是让内容更容易被理解。</p></blockquote>
@@ -98,7 +98,7 @@ function App(): React.ReactElement {
 
   // ── 文件夹 & 文件状态 ──
   const [folderPath, setFolderPath] = useState<string>(() =>
-    localStorage.getItem('dumbnote-folder') ?? ''
+    localStorage.getItem('muronote-folder') ?? ''
   )
   // currentFolderRef 同步跟踪 folderPath，供 handleNewNote 等回调中读取（避免 React state 异步竞态）
   const currentFolderRef = useRef<string>('')
@@ -121,12 +121,12 @@ function App(): React.ReactElement {
 
   // ── 主题 & 字体 ──
   const [theme, setTheme] = useState<ThemeMode>(() => {
-    const saved = localStorage.getItem('dumbnote-theme')
+    const saved = localStorage.getItem('muronote-theme')
     return (saved as ThemeMode) || 'ink'
   })
 
   const [fontBody, setFontBody] = useState<FontBody>(() => {
-    const saved = localStorage.getItem('dumbnote-font-body')
+    const saved = localStorage.getItem('muronote-font-body')
     return (saved as FontBody) || 'sans'
   })
 
@@ -153,7 +153,7 @@ function App(): React.ReactElement {
 
   // ── 侧边栏宽度（可拖拽调整） ──
   const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
-    const saved = localStorage.getItem('dumbnote-sidebar-width')
+    const saved = localStorage.getItem('muronote-sidebar-width')
     return saved ? parseInt(saved, 10) : 220
   })
   const sidebarResizing = useRef(false)
@@ -172,7 +172,7 @@ function App(): React.ReactElement {
       sidebarResizing.current = false
       document.removeEventListener('mousemove', onMove)
       document.removeEventListener('mouseup', onUp)
-      localStorage.setItem('dumbnote-sidebar-width', String(sidebarWidth))
+      localStorage.setItem('muronote-sidebar-width', String(sidebarWidth))
     }
     document.addEventListener('mousemove', onMove)
     document.addEventListener('mouseup', onUp)
@@ -213,11 +213,11 @@ function App(): React.ReactElement {
         applyTheme(e.matches ? 'ink' : 'paper')
       }
       mq.addEventListener('change', listener)
-      localStorage.setItem('dumbnote-theme', 'auto')
+      localStorage.setItem('muronote-theme', 'auto')
       return () => mq.removeEventListener('change', listener)
     } else {
       applyTheme(theme)
-      localStorage.setItem('dumbnote-theme', theme)
+      localStorage.setItem('muronote-theme', theme)
     }
   }, [theme])
 
@@ -229,7 +229,7 @@ function App(): React.ReactElement {
     } else {
       document.documentElement.removeAttribute('data-font-body')
     }
-    localStorage.setItem('dumbnote-font-body', fontBody)
+    localStorage.setItem('muronote-font-body', fontBody)
   }, [fontBody])
 
   // ── 标题字体切换 ──
@@ -241,7 +241,7 @@ function App(): React.ReactElement {
   // ── 持久化文件夹路径 ──
   useEffect(() => {
     if (folderPath) {
-      localStorage.setItem('dumbnote-folder', folderPath)
+      localStorage.setItem('muronote-folder', folderPath)
     }
   }, [folderPath])
 
@@ -322,14 +322,14 @@ function App(): React.ReactElement {
   // ── 最近打开的文件夹 ──
   const [recentFolders, setRecentFolders] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem('dumbnote-recent-folders') ?? '[]')
+      return JSON.parse(localStorage.getItem('muronote-recent-folders') ?? '[]')
     } catch { return [] }
   })
 
   const addRecentFolder = useCallback((fp: string) => {
     setRecentFolders((prev) => {
       const updated = [fp, ...prev.filter((p) => p !== fp)].slice(0, 5)
-      localStorage.setItem('dumbnote-recent-folders', JSON.stringify(updated))
+      localStorage.setItem('muronote-recent-folders', JSON.stringify(updated))
       return updated
     })
   }, [])
@@ -351,7 +351,7 @@ function App(): React.ReactElement {
     setEditorContent('')
     setSearchQuery('')
     setSearchResults([])
-    localStorage.removeItem('dumbnote-folder')
+    localStorage.removeItem('muronote-folder')
   }, [])
 
   // ── 打开文件夹（对话框） ──
@@ -682,7 +682,7 @@ function App(): React.ReactElement {
           <div className="welcome-page">
             <div className="welcome-content">
               <div className="welcome-hero">
-                <h1 className="welcome-title">DumbNote</h1>
+                <h1 className="welcome-title">Muronote</h1>
                 <p className="welcome-subtitle">为设计师打造的本地 Markdown 阅读器</p>
               </div>
 

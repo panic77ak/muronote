@@ -4,7 +4,7 @@ import path from 'path'
 const ROOT = path.resolve(__dirname, '../..')
 const MAIN_ENTRY = path.join(ROOT, 'out/main/index.js')
 
-test.describe('DumbNote Visual Regression', () => {
+test.describe('Muronote Visual Regression', () => {
   test('app launches and shows welcome page', async () => {
     const app = await _electron.launch({
       args: [MAIN_ENTRY],
