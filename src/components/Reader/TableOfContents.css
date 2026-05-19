@@ -1,0 +1,101 @@
+/* ============================================================
+   TableOfContents — 文档大纲面板
+   ============================================================ */
+
+/* ── 触发按钮 ── */
+.toc-toggle {
+  position: absolute;
+  top: 48px;
+  left: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: var(--color-surface-modebar, #252528);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.12s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.toc-toggle:hover {
+  color: var(--color-text-heading);
+  background: var(--color-border-default);
+}
+
+/* ── 面板 ── */
+.toc-panel {
+  position: absolute;
+  top: 84px;
+  left: 16px;
+  z-index: 10;
+  width: 220px;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  background: var(--color-surface-modebar, #252528);
+  border: 1px solid var(--color-border-default);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  padding: 8px 0;
+  animation: popover-in 0.15s ease-out;
+}
+
+.toc-header {
+  padding: 4px 14px 8px;
+  border-bottom: 1px solid var(--color-border-default);
+  margin-bottom: 4px;
+}
+
+.toc-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.toc-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.toc-item {
+  display: block;
+  padding: 4px 14px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.1s, background 0.1s;
+  text-decoration: none;
+  border-radius: 0;
+}
+
+.toc-item:hover {
+  color: var(--color-text-heading);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* 层级缩进 */
+.toc-item--level-1 { padding-left: 14px; font-weight: 600; color: var(--color-text-body); }
+.toc-item--level-2 { padding-left: 24px; }
+.toc-item--level-3 { padding-left: 34px; font-size: 11px; }
+.toc-item--level-4 { padding-left: 44px; font-size: 11px; }
+.toc-item--level-5 { padding-left: 54px; font-size: 11px; }
+.toc-item--level-6 { padding-left: 64px; font-size: 11px; }
+
+/* 滚动条 */
+.toc-panel::-webkit-scrollbar {
+  width: 3px;
+}
+
+.toc-panel::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 2px;
+}

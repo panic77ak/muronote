@@ -36,6 +36,8 @@ export interface ElectronAPI {
   // 文件操作
   createFile: (dirPath: string, fileName: string) => Promise<string>
   deleteFile: (filePath: string) => Promise<boolean>
+  renameFile: (oldPath: string, newName: string) => Promise<string>
+  duplicateFile: (filePath: string) => Promise<string>
 
   // chokidar 监听
   watchDir:   (dirPath: string) => Promise<boolean>

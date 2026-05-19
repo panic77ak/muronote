@@ -108,6 +108,40 @@ export function registerFsHandlers(): void {
   })
 
   // ──────────────────────────────────────────────
+  // 重命名文件
+  // ──────────────────────────────────────────────
+  ipcMain.handle('fs:renameFile', async (_event, oldPath: string, newName: string) => {
+    assertPathInRoot(oldPath)
+    const dir = path.dirname(oldPath)
+    const newPath = path.join(dir, newName)
+    assertPathInRoot(newPath)
+    await fs.rename(oldPath, newPath)
+    return newPath
+  })
+
+  // ──────────────────────────────────────────────
+  // 复制文件（生成副本）
+  // ──────────────────────────────────────────────
+  ipcMain.handle('fs:duplicateFile', async (_event, filePath: string) => {
+    assertPathInRoot(filePath)
+    const dir = path.dirname(filePath)
+    const ext = path.extname(filePath)
+    const base = path.basename(filePath, ext)
+    let newName = `${base} 副本${ext}`
+    let newPath = path.join(dir, newName)
+    let counter = 2
+    // 避免重名
+    while (fsSync.existsSync(newPath)) {
+      newName = `${base} 副本${counter}${ext}`
+      newPath = path.join(dir, newName)
+      counter++
+    }
+    const content = await fs.readFile(filePath, 'utf-8')
+    await fs.writeFile(newPath, content, 'utf-8')
+    return newPath
+  })
+
+  // ──────────────────────────────────────────────
   // 删除文件（主进程弹确认对话框后删除）
   // ──────────────────────────────────────────────
   ipcMain.handle('fs:deleteFile', async (_event, filePath: string) => {

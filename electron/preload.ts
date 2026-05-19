@@ -18,6 +18,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('fs:createFile', dirPath, fileName),
   deleteFile: (filePath: string) =>
     ipcRenderer.invoke('fs:deleteFile', filePath),
+  renameFile: (oldPath: string, newName: string) =>
+    ipcRenderer.invoke('fs:renameFile', oldPath, newName),
+  duplicateFile: (filePath: string) =>
+    ipcRenderer.invoke('fs:duplicateFile', filePath),
 
   // ── chokidar 监听 ──
   watchDir:   (dirPath: string) =>

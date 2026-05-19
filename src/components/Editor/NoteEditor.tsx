@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createMarkdownRenderer } from '../../renderer'
+import EditorToolbar from './EditorToolbar'
 import './NoteEditor.css'
 
 interface NoteEditorProps {
@@ -126,6 +127,49 @@ function NoteEditor({ filePath, content, onChange, onSave, onSaveError }: NoteEd
 
   // 预览区复制按钮事件委托
   const previewRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // ── Toolbar 格式化操作 ──
+  const handleToolbarAction = useCallback((action: string) => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const { selectionStart, selectionEnd, value } = textarea
+    const before = value.slice(0, selectionStart)
+    const selected = value.slice(selectionStart, selectionEnd)
+    const after = value.slice(selectionEnd)
+
+    let insert = ''
+    let cursorOffset = 0
+
+    switch (action) {
+      case 'h1': insert = `# ${selected || '标题'}`; cursorOffset = 2; break
+      case 'h2': insert = `## ${selected || '标题'}`; cursorOffset = 3; break
+      case 'h3': insert = `### ${selected || '标题'}`; cursorOffset = 4; break
+      case 'bold': insert = `**${selected || '粗体'}**`; cursorOffset = 2; break
+      case 'italic': insert = `*${selected || '斜体'}*`; cursorOffset = 1; break
+      case 'code': insert = `\`${selected || '代码'}\``; cursorOffset = 1; break
+      case 'link': insert = `[${selected || '链接文字'}](url)`; cursorOffset = 1; break
+      case 'ul': insert = `- ${selected || '列表项'}`; cursorOffset = 2; break
+      case 'ol': insert = `1. ${selected || '列表项'}`; cursorOffset = 3; break
+      case 'quote': insert = `> ${selected || '引用'}`; cursorOffset = 2; break
+      case 'codeblock': insert = `\`\`\`\n${selected || ''}\n\`\`\``; cursorOffset = 4; break
+      default: return
+    }
+
+    const newContent = before + insert + after
+    setLocalContent(newContent)
+    onChange(newContent)
+    schedulePreviewUpdate(newContent)
+    scheduleAutoSave(newContent)
+
+    // 恢复焦点并定位光标
+    requestAnimationFrame(() => {
+      textarea.focus()
+      const pos = selectionStart + (selected ? insert.length : cursorOffset)
+      textarea.setSelectionRange(pos, pos)
+    })
+  }, [onChange, schedulePreviewUpdate, scheduleAutoSave])
 
   useEffect(() => {
     const container = previewRef.current
@@ -164,7 +208,9 @@ function NoteEditor({ filePath, content, onChange, onSave, onSaveError }: NoteEd
     <div className="editor-split">
       {/* 左侧编辑区 */}
       <div className="editor-pane">
+        <EditorToolbar onAction={handleToolbarAction} />
         <textarea
+          ref={textareaRef}
           className="editor-pane-textarea"
           value={localContent}
           onChange={handleChange}

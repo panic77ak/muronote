@@ -7,6 +7,8 @@ interface FileListProps {
   activeFilePath: string | null
   onFileSelect: (file: NoteFile) => void
   onFileDelete: (file: NoteFile) => void
+  onFileRename?: (file: NoteFile, newName: string) => void
+  onFileDuplicate?: (file: NoteFile) => void
 }
 
 /**
@@ -49,10 +51,12 @@ function getFolder(relativePath?: string): string {
   return parts.slice(0, -1).join('/')
 }
 
-function FileList({ dirPath, activeFilePath, onFileSelect, onFileDelete }: FileListProps): React.ReactElement {
+function FileList({ dirPath, activeFilePath, onFileSelect, onFileDelete, onFileRename, onFileDuplicate }: FileListProps): React.ReactElement {
   const [files, setFiles] = useState<NoteFile[]>([])
   const [loading, setLoading] = useState(true)
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; file: NoteFile } | null>(null)
+  const [renamingFile, setRenamingFile] = useState<NoteFile | null>(null)
+  const [renameValue, setRenameValue] = useState('')
 
   // 加载文件列表
   const loadFiles = useCallback(async () => {
@@ -103,6 +107,34 @@ function FileList({ dirPath, activeFilePath, onFileSelect, onFileDelete }: FileL
     onFileDelete(file)
   }
 
+  const handleRenameClick = (file: NoteFile): void => {
+    setContextMenu(null)
+    setRenamingFile(file)
+    setRenameValue(displayName(file.name))
+  }
+
+  const handleRenameSubmit = (): void => {
+    if (!renamingFile || !renameValue.trim()) {
+      setRenamingFile(null)
+      return
+    }
+    const newName = renameValue.trim().endsWith('.md') ? renameValue.trim() : `${renameValue.trim()}.md`
+    if (newName !== renamingFile.name && onFileRename) {
+      onFileRename(renamingFile, newName)
+    }
+    setRenamingFile(null)
+  }
+
+  const handleRenameKeyDown = (e: React.KeyboardEvent): void => {
+    if (e.key === 'Enter') handleRenameSubmit()
+    if (e.key === 'Escape') setRenamingFile(null)
+  }
+
+  const handleDuplicateClick = (file: NoteFile): void => {
+    setContextMenu(null)
+    if (onFileDuplicate) onFileDuplicate(file)
+  }
+
   if (loading) {
     return <div className="file-list-empty">加载中…</div>
   }
@@ -118,11 +150,23 @@ function FileList({ dirPath, activeFilePath, onFileSelect, onFileDelete }: FileL
           <li
             key={file.path}
             className={`file-item ${activeFilePath === file.path ? 'active' : ''}`}
-            onClick={() => onFileSelect(file)}
+            onClick={() => { if (!renamingFile) onFileSelect(file) }}
             onContextMenu={(e) => handleContextMenu(e, file)}
             title={file.path}
           >
-            <span className="file-item-name">{displayName(file.name)}</span>
+            {renamingFile?.path === file.path ? (
+              <input
+                className="file-item-rename-input"
+                value={renameValue}
+                onChange={(e) => setRenameValue(e.target.value)}
+                onBlur={handleRenameSubmit}
+                onKeyDown={handleRenameKeyDown}
+                autoFocus
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <span className="file-item-name">{displayName(file.name)}</span>
+            )}
             <span className="file-item-meta">
               {getFolder(file.relativePath) && (
                 <span className="file-item-folder">{getFolder(file.relativePath)}/</span>
@@ -141,6 +185,19 @@ function FileList({ dirPath, activeFilePath, onFileSelect, onFileDelete }: FileL
           style={{ top: contextMenu.y, left: contextMenu.x }}
           onClick={(e) => e.stopPropagation()}
         >
+          <li
+            className="context-menu-item"
+            onClick={() => handleRenameClick(contextMenu.file)}
+          >
+            重命名
+          </li>
+          <li
+            className="context-menu-item"
+            onClick={() => handleDuplicateClick(contextMenu.file)}
+          >
+            复制副本
+          </li>
+          <li className="context-menu-divider" />
           <li
             className="context-menu-item context-menu-item--danger"
             onClick={() => handleDeleteClick(contextMenu.file)}

@@ -1,10 +1,12 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import matter from 'gray-matter'
 import ReaderView from './components/Reader/ReaderView'
+import TableOfContents from './components/Reader/TableOfContents'
 import FileList from './components/Sidebar/FileList'
 import SearchResults from './components/Sidebar/SearchResults'
 import NoteEditor from './components/Editor/NoteEditor'
 import SettingsPopover from './components/Settings/SettingsPopover'
+import QuickOpen from './components/QuickOpen/QuickOpen'
 import { createMarkdownRenderer } from './renderer'
 import type { NoteFile, SearchResult } from './electron.d'
 import './themes/variables.css'
@@ -144,10 +146,45 @@ function App(): React.ReactElement {
 
   // ── 设置面板状态 ──
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [tocVisible, setTocVisible] = useState(false)
+  const [quickOpenVisible, setQuickOpenVisible] = useState(false)
+
+  // ── 侧边栏宽度（可拖拽调整） ──
+  const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
+    const saved = localStorage.getItem('dumbnote-sidebar-width')
+    return saved ? parseInt(saved, 10) : 220
+  })
+  const sidebarResizing = useRef(false)
+
+  const handleSidebarResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    sidebarResizing.current = true
+    const startX = e.clientX
+    const startWidth = sidebarWidth
+
+    const onMove = (ev: MouseEvent): void => {
+      const newWidth = Math.min(400, Math.max(160, startWidth + ev.clientX - startX))
+      setSidebarWidth(newWidth)
+    }
+    const onUp = (): void => {
+      sidebarResizing.current = false
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+      localStorage.setItem('dumbnote-sidebar-width', String(sidebarWidth))
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+  }, [sidebarWidth])
 
   // ── 渲染 HTML ──
   // 阅读模式用剥离 frontmatter 后的正文渲染；无 folderPath 时欢迎页用硬编码 HTML，不经过 md.render
   const renderedHtml = activeFile ? md.render(stripFrontmatter(fileContent)) : md.render(WELCOME_MARKDOWN)
+
+  // ── 字数统计 & 阅读时间 ──
+  const wordCount = activeFile
+    ? stripFrontmatter(fileContent).replace(/\s+/g, '').length
+    : 0
+  const readingMinutes = Math.max(1, Math.ceil(wordCount / 400))
 
   // ── 提取 frontmatter meta（tags/status） ──
   const { tags: noteTags, status: noteStatus } = activeFile
@@ -351,6 +388,30 @@ function App(): React.ReactElement {
     }
   }, [activeFile])
 
+  // ── 重命名文件 ──
+  const handleFileRename = useCallback(async (file: NoteFile, newName: string) => {
+    try {
+      const newPath = await window.electronAPI.renameFile(file.path, newName)
+      // 若重命名的是当前打开文件，更新 activeFile
+      if (activeFile?.path === file.path) {
+        setActiveFile({ ...file, name: newName, path: newPath })
+      }
+    } catch (err) {
+      console.error('重命名失败', err)
+      showToast('重命名失败，请重试')
+    }
+  }, [activeFile, showToast])
+
+  // ── 复制文件 ──
+  const handleFileDuplicate = useCallback(async (file: NoteFile) => {
+    try {
+      await window.electronAPI.duplicateFile(file.path)
+    } catch (err) {
+      console.error('复制失败', err)
+      showToast('复制失败，请重试')
+    }
+  }, [showToast])
+
   // ── Ctrl+N 新建笔记 ──
   const handleNewNote = useCallback(async () => {
     // 读取 ref 获取当前最新路径（避免 React state 异步更新竞态）
@@ -383,7 +444,7 @@ function App(): React.ReactElement {
     }
   }, [showToast])
 
-  // ── Ctrl+N 快捷键 ──
+  // ── 快捷键 ──
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent): void => {
       // Ctrl+N 新建
@@ -395,6 +456,11 @@ function App(): React.ReactElement {
       if (e.ctrlKey && e.shiftKey && e.key === 'R') {
         e.preventDefault()
         setMode((prev) => (prev === 'reader' ? 'editor' : 'reader'))
+      }
+      // Ctrl+P 快速打开
+      if (e.ctrlKey && !e.shiftKey && e.key === 'p') {
+        e.preventDefault()
+        setQuickOpenVisible(true)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -412,7 +478,7 @@ function App(): React.ReactElement {
     <>
     <div className="app-layout" onDrop={handleDrop} onDragOver={handleDragOver}>
       {/* ── 左侧侧边栏 ── */}
-      <aside className="sidebar">
+      <aside className="sidebar" style={{ width: sidebarWidth }}>
         <div className="sidebar-header">
           <button className="open-btn" onClick={handleOpenFolder}>
             打开文件夹
@@ -472,6 +538,8 @@ function App(): React.ReactElement {
                   activeFilePath={activeFile?.path ?? null}
                   onFileSelect={(f) => void handleFileSelect(f)}
                   onFileDelete={(f) => void handleFileDelete(f)}
+                  onFileRename={(f, n) => void handleFileRename(f, n)}
+                  onFileDuplicate={(f) => void handleFileDuplicate(f)}
                 />
               )}
             </>
@@ -497,6 +565,9 @@ function App(): React.ReactElement {
           )}
         </div>
       </aside>
+
+      {/* 侧边栏拖拽调整手柄 */}
+      <div className="sidebar-resize-handle" onMouseDown={handleSidebarResizeStart} />
 
       {/* ── 右侧主区域 ── */}
       <main className="main-area">
@@ -587,7 +658,16 @@ function App(): React.ReactElement {
             </div>
           </div>
         ) : mode === 'reader' ? (
-          <ReaderView html={renderedHtml} tags={noteTags} status={noteStatus} width={readerWidth} />
+          <>
+            {activeFile && (
+              <TableOfContents
+                html={renderedHtml}
+                visible={tocVisible}
+                onToggle={() => setTocVisible(!tocVisible)}
+              />
+            )}
+            <ReaderView html={renderedHtml} tags={noteTags} status={noteStatus} width={readerWidth} />
+          </>
         ) : (
           activeFile ? (
             <NoteEditor
@@ -604,10 +684,27 @@ function App(): React.ReactElement {
             </div>
           )
         )}
+
+        {/* 底部状态栏 */}
+        {activeFile && (
+          <div className="status-bar">
+            <span className="status-bar-item">{wordCount} 字</span>
+            <span className="status-bar-item">约 {readingMinutes} 分钟</span>
+            <span className="status-bar-item status-bar-mode">{mode === 'reader' ? '阅读' : '编辑'}</span>
+          </div>
+        )}
       </main>
     </div>
     {toastMsg && (
       <div className="toast toast-error">{toastMsg}</div>
+    )}
+    {folderPath && (
+      <QuickOpen
+        open={quickOpenVisible}
+        onClose={() => setQuickOpenVisible(false)}
+        onSelect={(f) => void handleFileSelect(f)}
+        dirPath={folderPath}
+      />
     )}
   </>
   )
