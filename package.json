@@ -10,7 +10,9 @@
     "pack": "npm run build && electron-builder --dir",
     "make": "npm run build && electron-builder",
     "lint": "eslint . --ext .ts,.tsx",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:visual": "npm run build && npx playwright test",
+    "test:visual:update": "npm run build && npx playwright test --update-snapshots"
   },
   "keywords": [],
   "author": "DumbNote",
@@ -30,7 +32,9 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },
@@ -46,6 +50,7 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^25.8.0",
     "@types/react": "^19.2.14",

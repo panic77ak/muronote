@@ -7,6 +7,7 @@ import SearchResults from './components/Sidebar/SearchResults'
 import NoteEditor from './components/Editor/NoteEditor'
 import SettingsPopover from './components/Settings/SettingsPopover'
 import QuickOpen from './components/QuickOpen/QuickOpen'
+import ShortcutsPanel from './components/ShortcutsPanel/ShortcutsPanel'
 import { createMarkdownRenderer } from './renderer'
 import type { NoteFile, SearchResult } from './electron.d'
 import './themes/variables.css'
@@ -38,7 +39,7 @@ const WELCOME_SAMPLE_HTML = `
 const WELCOME_MARKDOWN = ``
 
 type ViewMode = 'reader' | 'editor'
-type ThemeMode = 'ink' | 'paper' | 'sepia'
+type ThemeMode = 'ink' | 'paper' | 'sepia' | 'auto'
 type FontBody = 'sans' | 'serif' | 'lora'
 type FontHeading = 'inter' | 'serif'
 type ReaderWidth = '560' | '720' | '900' | 'full'
@@ -148,6 +149,7 @@ function App(): React.ReactElement {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [tocVisible, setTocVisible] = useState(false)
   const [quickOpenVisible, setQuickOpenVisible] = useState(false)
+  const [shortcutsVisible, setShortcutsVisible] = useState(false)
 
   // ── 侧边栏宽度（可拖拽调整） ──
   const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
@@ -193,8 +195,30 @@ function App(): React.ReactElement {
 
   // ── 主题切换 ──
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('dumbnote-theme', theme)
+    const applyTheme = (t: string): void => {
+      if (t === 'ink') {
+        document.documentElement.removeAttribute('data-theme')
+      } else {
+        document.documentElement.setAttribute('data-theme', t)
+      }
+    }
+
+    if (theme === 'auto') {
+      // 跟随系统偏好
+      const mq = window.matchMedia('(prefers-color-scheme: dark)')
+      const resolved = mq.matches ? 'ink' : 'paper'
+      applyTheme(resolved)
+
+      const listener = (e: MediaQueryListEvent): void => {
+        applyTheme(e.matches ? 'ink' : 'paper')
+      }
+      mq.addEventListener('change', listener)
+      localStorage.setItem('dumbnote-theme', 'auto')
+      return () => mq.removeEventListener('change', listener)
+    } else {
+      applyTheme(theme)
+      localStorage.setItem('dumbnote-theme', theme)
+    }
   }, [theme])
 
   // ── 字体切换 ──
@@ -462,6 +486,11 @@ function App(): React.ReactElement {
         e.preventDefault()
         setQuickOpenVisible(true)
       }
+      // Ctrl+/ 快捷键面板
+      if (e.ctrlKey && e.key === '/') {
+        e.preventDefault()
+        setShortcutsVisible((v) => !v)
+      }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
@@ -646,14 +675,40 @@ function App(): React.ReactElement {
         {/* ── 内容区 ── */}
         {!folderPath ? (
           /* 未打开文件夹：显示欢迎页 */
-          <div className="welcome-page">
+          <div className="welcome-page" onDrop={handleDrop} onDragOver={handleDragOver}>
             <div className="welcome-content">
-              <ReaderView html={WELCOME_SAMPLE_HTML} width={readerWidth} />
-              <div className="welcome-cta">
+              <div className="welcome-hero">
+                <h1 className="welcome-title">DumbNote</h1>
+                <p className="welcome-subtitle">为设计师打造的本地 Markdown 阅读器</p>
+              </div>
+
+              <div className="welcome-drop-zone">
+                <div className="welcome-drop-icon">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <rect x="8" y="12" width="32" height="28" rx="3" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M24 22v12M18 28l6-6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <p className="welcome-drop-text">拖入文件夹到此处</p>
+                <span className="welcome-drop-or">或</span>
                 <button className="welcome-cta-btn" onClick={handleOpenFolder}>
                   选择笔记目录
                 </button>
-                <p className="welcome-cta-hint">打开本地文件夹，所有 .md 文件将自动出现在侧边栏</p>
+              </div>
+
+              <div className="welcome-features">
+                <div className="welcome-feature">
+                  <span className="welcome-feature-icon">🎨</span>
+                  <span>3 套精调主题</span>
+                </div>
+                <div className="welcome-feature">
+                  <span className="welcome-feature-icon">🔤</span>
+                  <span>多种字体组合</span>
+                </div>
+                <div className="welcome-feature">
+                  <span className="welcome-feature-icon">⌨️</span>
+                  <span>Ctrl+/ 查看快捷键</span>
+                </div>
               </div>
             </div>
           </div>
@@ -706,6 +761,10 @@ function App(): React.ReactElement {
         dirPath={folderPath}
       />
     )}
+    <ShortcutsPanel
+      open={shortcutsVisible}
+      onClose={() => setShortcutsVisible(false)}
+    />
   </>
   )
 }

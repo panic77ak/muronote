@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import './SettingsPopover.css'
 
-type ThemeMode = 'ink' | 'paper' | 'sepia'
+type ThemeMode = 'ink' | 'paper' | 'sepia' | 'auto'
 type FontBody = 'sans' | 'serif' | 'lora'
 type FontHeading = 'inter' | 'serif'
 type ReaderWidth = '560' | '720' | '900' | 'full'
@@ -20,6 +20,7 @@ interface SettingsPopoverProps {
 }
 
 const THEMES: { value: ThemeMode; label: string }[] = [
+  { value: 'auto', label: 'Auto' },
   { value: 'ink', label: 'Ink' },
   { value: 'paper', label: 'Paper' },
   { value: 'sepia', label: 'Sepia' },

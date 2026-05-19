@@ -9,3 +9,20 @@ body {
   background: #1e1e1e;
   color: #d4d4d4;
 }
+
+/* ── 全局主题过渡（color/background 平滑切换） ── */
+:root {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body,
+.app-layout,
+.sidebar,
+.main-area,
+.reader-view,
+.editor-pane,
+.preview-pane,
+.toolbar,
+.status-bar {
+  transition: background-color 0.3s ease, border-color 0.2s ease, color 0.3s ease;
+}
