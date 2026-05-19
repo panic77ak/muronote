@@ -1,8 +1,55 @@
 # Muronote
 
-A beautiful local Markdown note-taking app built for designers.
+<p align="center">
+  <img src="resources/icon-512.png" alt="Muronote Logo" width="128" height="128">
+</p>
+
+<p align="center">
+  <strong>A beautiful local Markdown note-taking app built for designers.</strong>
+</p>
+
+<p align="center">
+  <a href="./README.zh-CN.md">中文文档</a> •
+  <a href="https://github.com/panic77ak/muronote/releases">Download</a> •
+  <a href="#features">Features</a> •
+  <a href="#screenshots">Screenshots</a>
+</p>
+
+---
 
 Open a folder, and all `.md` files appear in the sidebar — ready to read, edit, and organize with a publishing-quality typographic experience.
+
+## Screenshots
+
+### Welcome Page
+> Drag a folder or select a notes directory to get started.
+
+![Welcome Page](docs/screenshots/welcome.png)
+
+### Reading Mode — Ink Theme (Dark)
+> Elegant typography with carefully tuned line-height and hierarchy.
+
+![Reading Mode - Ink](docs/screenshots/reader-ink.png)
+
+### Reading Mode — Paper Theme (Light)
+> Clean white background with a print-like feel.
+
+![Reading Mode - Paper](docs/screenshots/reader-paper.png)
+
+### Reading Mode — Sepia Theme (Warm)
+> Warm tones for comfortable long-form reading.
+
+![Reading Mode - Sepia](docs/screenshots/reader-sepia.png)
+
+### Editor Mode
+> Built-in CodeMirror editor with syntax highlighting.
+
+![Editor Mode](docs/screenshots/editor.png)
+
+### Settings Panel
+> Theme, font, and layout customization at your fingertips.
+
+![Settings Panel](docs/screenshots/settings.png)
 
 ## Features
 
@@ -11,8 +58,9 @@ Open a folder, and all `.md` files appear in the sidebar — ready to read, edit
 - **Markdown Editor** — Built-in CodeMirror editor with live preview
 - **Sidebar & File Tree** — Browse and search all notes in your folder
 - **Table of Contents** — Auto-generated outline for quick navigation
-- **Quick Open** — Fuzzy search to jump to any note instantly
-- **Keyboard Shortcuts** — Full shortcut support for power users
+- **Quick Open** — Fuzzy search to jump to any note instantly (`Ctrl+P`)
+- **Full-text Search** — Search across all notes in your folder
+- **Keyboard Shortcuts** — Full shortcut support for power users (`Ctrl+/` to view all)
 - **Drag & Drop** — Drag folders directly into the app to open them
 - **Local First** — All data stays on your machine, no cloud sync required
 - **Auto Update** — Built-in update mechanism via GitHub Releases
@@ -67,6 +115,15 @@ npm run make
 - **State**: Zustand
 - **Testing**: Playwright
 - **Build**: electron-builder
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+N` | New note |
+| `Ctrl+P` | Quick open |
+| `Ctrl+Shift+R` | Toggle read/edit mode |
+| `Ctrl+/` | Show keyboard shortcuts |
 
 ## License
 
