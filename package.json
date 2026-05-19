@@ -31,7 +31,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "muronote",
+        "owner": "panic77ak",
         "repo": "muronote"
       }
     ],
@@ -62,7 +62,7 @@
     "mac": {
       "target": ["dmg", "zip"],
       "category": "public.app-category.productivity",
-      "icon": "resources/icon.icns"
+      "icon": "resources/icon-512.png"
     },
     "linux": {
       "target": ["AppImage"],
