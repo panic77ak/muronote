@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
+import { autoUpdater } from 'electron-updater'
 import { registerFsHandlers } from './ipc/fs'
 
 function createWindow(): void {
@@ -43,6 +44,13 @@ function createWindow(): void {
 app.whenReady().then(() => {
   registerFsHandlers()
   createWindow()
+
+  // ── 自动更新（生产环境） ──
+  if (!process.env['ELECTRON_RENDERER_URL']) {
+    autoUpdater.autoDownload = true
+    autoUpdater.autoInstallOnAppQuit = true
+    autoUpdater.checkForUpdatesAndNotify()
+  }
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

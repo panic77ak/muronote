@@ -28,25 +28,46 @@
       "node_modules/**/*",
       "package.json"
     ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "dumbnote",
+        "repo": "dumbnote"
+      }
+    ],
+    "fileAssociations": [
+      {
+        "ext": "md",
+        "name": "Markdown",
+        "description": "Markdown Document",
+        "role": "Viewer"
+      }
+    ],
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         }
-      ]
+      ],
+      "icon": "resources/icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "shortcutName": "DumbNote"
     },
     "mac": {
-      "target": "dmg",
-      "category": "public.app-category.productivity"
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.productivity",
+      "icon": "resources/icon.icns"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Office",
+      "icon": "resources/icons"
     }
   },
   "devDependencies": {
@@ -74,6 +95,7 @@
     "@codemirror/view": "^6.43.0",
     "chokidar": "^5.0.0",
     "electron-store": "^11.0.2",
+    "electron-updater": "^6.8.3",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "markdown-it": "^14.1.1",
