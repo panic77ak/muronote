@@ -17,6 +17,11 @@ function createWindow(): void {
     }
   })
 
+  // ── 阻止 Electron 把拖入文件当作导航 ──
+  mainWindow.webContents.on('will-navigate', (event) => {
+    event.preventDefault()
+  })
+
   // ── 窗口控制 IPC（Windows frameless 用） ──
   ipcMain.handle('window:minimize', () => { mainWindow.minimize() })
   ipcMain.handle('window:maximize', () => {

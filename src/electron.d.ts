@@ -52,6 +52,9 @@ export interface ElectronAPI {
   // 拖拽设置文件夹
   setFolder: (dirPath: string) => Promise<string | null>
 
+  // 获取拖拽文件的本地路径（Electron 42+）
+  getPathForFile: (file: File) => string
+
   // 窗口控制
   windowMinimize: () => Promise<void>
   windowMaximize: () => Promise<void>

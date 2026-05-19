@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webUtils } from 'electron'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // ── 文件读写 ──
@@ -46,6 +46,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // ── 拖拽设置文件夹 ──
   setFolder: (dirPath: string) =>
     ipcRenderer.invoke('fs:setFolder', dirPath),
+
+  // ── 获取拖拽文件路径（Electron 42+ 必须通过 webUtils） ──
+  getPathForFile: (file: File) => webUtils.getPathForFile(file),
 
   // ── 窗口控制（Windows frameless） ──
   windowMinimize: () => ipcRenderer.invoke('window:minimize'),

@@ -363,26 +363,56 @@ function App(): React.ReactElement {
   }
 
   // ── 拖拽文件夹 ──
+  const [isDragging, setIsDragging] = useState(false)
+  const dragCounter = useRef(0)
+
   const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    setIsDragging(false)
+    dragCounter.current = 0
+
     const items = e.dataTransfer.files
-    if (items.length === 0) return
-    // 取第一个拖入的路径
-    const droppedPath = items[0].path
-    if (!droppedPath) return
+    if (items.length === 0) {
+      showToast('未检测到文件')
+      return
+    }
+    // Electron 42+: 使用 webUtils.getPathForFile 获取路径
+    const droppedPath = window.electronAPI.getPathForFile(items[0])
+    if (!droppedPath) {
+      showToast('无法获取路径')
+      return
+    }
     // 通过主进程验证是目录
     const validPath = await window.electronAPI.setFolder(droppedPath)
     if (validPath) {
       applyFolder(validPath)
     } else {
-      showToast('请拖入一个文件夹')
+      showToast('请拖入一个文件夹（非文件）')
     }
   }, [applyFolder, showToast])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'
+  }, [])
+
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounter.current++
+    setIsDragging(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounter.current--
+    if (dragCounter.current <= 0) {
+      setIsDragging(false)
+      dragCounter.current = 0
+    }
   }, [])
 
   // ── 自动保存 ──
@@ -505,35 +535,28 @@ function App(): React.ReactElement {
 
   return (
     <>
-    <div className="app-layout" onDrop={handleDrop} onDragOver={handleDragOver}>
-      {/* ── 左侧侧边栏 ── */}
-      <aside className="sidebar" style={{ width: sidebarWidth }}>
-        <div className="sidebar-header">
-          <button className="open-btn" onClick={handleOpenFolder}>
-            打开文件夹
-          </button>
-          {folderPath && (
-            <span className="folder-path" title={folderPath}>
-              📁 {folderDisplayName}
-              <button
-                className="folder-close-btn"
-                onClick={handleCloseFolder}
-                title="关闭文件夹"
-              >
-                ×
+    <div className="app-layout" onDrop={handleDrop} onDragOver={handleDragOver} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave}>
+      {/* ── 左侧侧边栏（仅在有文件夹时显示） ── */}
+      {folderPath && (
+        <>
+          <aside className="sidebar" style={{ width: sidebarWidth }}>
+            <div className="sidebar-header">
+              <span className="folder-path" title={folderPath}>
+                📁 {folderDisplayName}
+                <button
+                  className="folder-close-btn"
+                  onClick={handleCloseFolder}
+                  title="关闭文件夹"
+                >
+                  ×
+                </button>
+              </span>
+              <button className="new-note-btn" onClick={handleNewNote} title="Ctrl+N">
+                + 新建笔记
               </button>
-            </span>
-          )}
-          {folderPath && (
-            <button className="new-note-btn" onClick={handleNewNote} title="Ctrl+N">
-              + 新建笔记
-            </button>
-          )}
-        </div>
+            </div>
 
-        <div className="sidebar-content">
-          {folderPath ? (
-            <>
+            <div className="sidebar-content">
               {/* 统一搜索框 */}
               <div className="full-search-box">
                 <input
@@ -571,32 +594,13 @@ function App(): React.ReactElement {
                   onFileDuplicate={(f) => void handleFileDuplicate(f)}
                 />
               )}
-            </>
-          ) : (
-            <div className="sidebar-empty">
-              <p>拖入文件夹或点击上方按钮</p>
-              {recentFolders.length > 0 && (
-                <div className="recent-folders">
-                  <span className="recent-folders-label">最近打开</span>
-                  {recentFolders.map((fp) => (
-                    <button
-                      key={fp}
-                      className="recent-folder-item"
-                      onClick={() => applyFolder(fp)}
-                      title={fp}
-                    >
-                      {fp.split(/[\\/]/).pop()}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
-          )}
-        </div>
-      </aside>
+          </aside>
 
-      {/* 侧边栏拖拽调整手柄 */}
-      <div className="sidebar-resize-handle" onMouseDown={handleSidebarResizeStart} />
+          {/* 侧边栏拖拽调整手柄 */}
+          <div className="sidebar-resize-handle" onMouseDown={handleSidebarResizeStart} />
+        </>
+      )}
 
       {/* ── 右侧主区域 ── */}
       <main className="main-area">
@@ -675,14 +679,14 @@ function App(): React.ReactElement {
         {/* ── 内容区 ── */}
         {!folderPath ? (
           /* 未打开文件夹：显示欢迎页 */
-          <div className="welcome-page" onDrop={handleDrop} onDragOver={handleDragOver}>
+          <div className="welcome-page">
             <div className="welcome-content">
               <div className="welcome-hero">
                 <h1 className="welcome-title">DumbNote</h1>
                 <p className="welcome-subtitle">为设计师打造的本地 Markdown 阅读器</p>
               </div>
 
-              <div className="welcome-drop-zone">
+              <div className={`welcome-drop-zone ${isDragging ? 'dragging' : ''}`}>
                 <div className="welcome-drop-icon">
                   <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
                     <rect x="8" y="12" width="32" height="28" rx="3" stroke="currentColor" strokeWidth="2"/>
@@ -710,6 +714,26 @@ function App(): React.ReactElement {
                   <span>Ctrl+/ 查看快捷键</span>
                 </div>
               </div>
+
+              {/* 最近打开 */}
+              {recentFolders.length > 0 && (
+                <div className="welcome-recent">
+                  <span className="welcome-recent-label">最近打开</span>
+                  <div className="welcome-recent-list">
+                    {recentFolders.map((fp) => (
+                      <button
+                        key={fp}
+                        className="welcome-recent-item"
+                        onClick={() => applyFolder(fp)}
+                        title={fp}
+                      >
+                        <span className="welcome-recent-icon">📁</span>
+                        <span className="welcome-recent-name">{fp.split(/[\\/]/).pop()}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : mode === 'reader' ? (

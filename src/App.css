@@ -147,46 +147,6 @@
   color: var(--color-text-disabled);
 }
 
-/* ── 最近打开文件夹 ── */
-.recent-folders {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: left;
-}
-
-.recent-folders-label {
-  font-size: 10px;
-  color: var(--color-text-disabled);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-  padding-left: 2px;
-}
-
-.recent-folder-item {
-  display: block;
-  width: 100%;
-  padding: 6px 8px;
-  background: transparent;
-  border: 1px solid var(--color-border-default);
-  border-radius: 4px;
-  color: var(--color-text-secondary);
-  font-size: 12px;
-  cursor: pointer;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: border-color 0.12s, color 0.12s;
-}
-
-.recent-folder-item:hover {
-  border-color: var(--color-text-secondary);
-  color: var(--color-text-body);
-}
-
 /* ---------- 右侧主区域 ---------- */
 .main-area {
   flex: 1;
@@ -490,9 +450,9 @@
 }
 
 .welcome-drop-zone:hover,
-.welcome-page:has(.welcome-drop-zone):active .welcome-drop-zone {
+.welcome-drop-zone.dragging {
   border-color: var(--color-accent, #6eb5a0);
-  background: rgba(110, 181, 160, 0.04);
+  background: rgba(110, 181, 160, 0.06);
 }
 
 .welcome-drop-icon {
@@ -500,7 +460,8 @@
   transition: color 0.2s;
 }
 
-.welcome-drop-zone:hover .welcome-drop-icon {
+.welcome-drop-zone:hover .welcome-drop-icon,
+.welcome-drop-zone.dragging .welcome-drop-icon {
   color: var(--color-accent, #6eb5a0);
 }
 
@@ -547,4 +508,56 @@
 
 .welcome-feature-icon {
   font-size: 16px;
+}
+
+/* ── 最近打开（欢迎页底部） ── */
+.welcome-recent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.welcome-recent-label {
+  font-size: 11px;
+  color: var(--color-text-disabled);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.welcome-recent-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.welcome-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+}
+
+.welcome-recent-item:hover {
+  border-color: var(--color-accent, #6eb5a0);
+  color: var(--color-text-heading);
+  background: rgba(110, 181, 160, 0.04);
+}
+
+.welcome-recent-icon {
+  font-size: 14px;
+}
+
+.welcome-recent-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
 }
